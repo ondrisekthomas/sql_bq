@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SSOT Query Builder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brandmark">SQ</div>
+    <div><strong>SSOT Query Builder</strong><span>BigQuery · datahub-reporting</span></div>
+    <button id="themeButton" class="icon-button" title="Přepnout motiv">◐</button>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div><p class="eyebrow">NO-CODE SQL GENERÁTOR</p><h1>Poskládejte query<br>bez psaní kódu.</h1></div>
+      <p class="hero-copy">Vyberte zdroje, dimenze a metriky. Generátor vytvoří agregované CTE, filtry i bezpečné joiny pro BigQuery.</p>
+    </section>
+
+    <div class="workspace">
+      <section class="builder">
+        <div class="step">
+          <div class="step-title"><span>01</span><div><h2>Zdroje</h2><p>Vyberte jednu nebo více SSOT tabulek</p></div><b id="sourceCount">0</b></div>
+          <nav id="sourceTabs" class="source-tabs">
+            <button class="active" data-tab="ssot">SSOT</button>
+            <button data-tab="articles">Articles</button>
+            <button data-tab="social">Social</button>
+          </nav>
+          <div id="sources" class="source-grid"></div>
+        </div>
+
+        <div class="step">
+          <div class="step-title"><span>02</span><div><h2>Čas a granularita</h2><p>Povinný partition filtr pro všechny zdroje</p></div></div>
+          <div class="form-grid three">
+            <label>Od<input id="dateFrom" type="date"></label>
+            <label>Do<input id="dateTo" type="date"></label>
+            <label>Granularita<select id="grain"><option value="day">Den</option><option value="week">Týden</option><option value="month">Měsíc</option><option value="none">Bez data ve výstupu</option></select></label>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-title"><span>03</span><div><h2>Dimenze</h2><p>Společné dimenze se automaticky použijí jako join klíče</p></div><b id="dimensionCount">0</b></div>
+          <div class="search-box"><span>⌕</span><input id="dimensionSearch" type="search" placeholder="Hledat dimenzi… např. campaign, OS, rubric"><div id="dimensionSuggest" class="suggestions"></div></div>
+          <div id="dimensions" class="choice-grid empty-state">Nejdřív vyberte zdroj.</div>
+        </div>
+
+        <div class="step">
+          <div class="step-title"><span>04</span><div><h2>Metriky</h2><p>Součty, HLL uživatelé a odvozené metriky</p></div><b id="metricCount">0</b></div>
+          <div class="search-box"><span>⌕</span><input id="metricSearch" type="search" placeholder="Hledat metriku… např. real users, pass 100, sessions"><div id="metricSuggest" class="suggestions"></div></div>
+          <div id="metrics" class="metric-groups empty-state">Nejdřív vyberte zdroj.</div>
+        </div>
+
+        <div class="step">
+          <div class="step-title"><span>05</span><div><h2>Filtry</h2><p>Podmínky se aplikují uvnitř každého relevantního CTE</p></div><button id="addFilter" class="secondary">+ Přidat filtr</button></div>
+          <div id="filters" class="filter-list"></div>
+        </div>
+
+        <div class="step">
+          <div class="step-title"><span>06</span><div><h2>Spojení</h2><p>Způsob kombinace více zdrojů</p></div></div>
+          <div class="form-grid two">
+            <label>Operace<select id="combine"><option value="AUTO">Automaticky (LEFT JOIN)</option><option value="LEFT JOIN">LEFT JOIN</option><option value="INNER JOIN">INNER JOIN</option><option value="FULL OUTER JOIN">FULL OUTER JOIN</option><option value="CROSS JOIN">CROSS JOIN</option><option value="UNION ALL">UNION ALL</option></select></label>
+            <label>Hlavní zdroj<select id="primary"></select></label>
+          </div>
+          <p id="joinHint" class="hint">Pro jeden zdroj není spojení potřeba.</p>
+        </div>
+      </section>
+
+      <aside class="output-panel">
+        <div class="output-head"><div><span class="live-dot"></span> LIVE SQL</div><div><button id="formatButton" class="text-button">Formátovat</button><button id="copyButton" class="copy">Kopírovat SQL</button></div></div>
+        <div id="validation" class="validation"></div>
+        <pre><code id="sqlOutput">-- Vyberte alespoň jeden zdroj a metriku.</code></pre>
+        <div class="output-foot"><span>BigQuery Standard SQL</span><span id="lineCount">1 řádek</span></div>
+      </aside>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
